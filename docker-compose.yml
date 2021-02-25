@@ -1,0 +1,63 @@
+version: "3"
+
+networks:
+  web:
+    external: true
+  database:
+    external: true
+
+services:
+  mysql:
+    image: mysql:5.7
+    restart: always
+    volumes:
+      - mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: fpRXyLkSj7
+    networks:
+      - database
+    labels:
+      - traefik.enable=false
+  adminer:
+    image: adminer:4.6.3-standalone
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.adminer.rule=Host(`adminer.example`)"
+      - "traefik.http.routers.adminer.tls=true"
+      - "traefik.http.routers.adminer.tls.certresolver=lets-encrypt"
+    networks:
+      - database
+      - web
+    depends_on:
+      - mysql
+      
+  wordpress:
+    image: deathmetall/wordpress-nginx:latest
+#    build: build
+    container_name: wordpress1
+    ports:
+      - 8080
+      - 8443
+    volumes:
+      - wodpress:/bitnami/wordpress
+      - ./wordpress-server-block.conf:/opt/bitnami/nginx/conf/server_blocks/wordpress-server-block.conf:ro
+    environment:
+      WORDPRESS_DATABASE_PASSWORD: CONTRASEÑA
+      MARIADB_HOST: mysql
+      WORDPRESS_DATABASE_USER: root
+      WORDPRESS_DATABASE_NAME: DATABASE
+      MARIADB_PORT_NUMBER: 3306
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wordpress.tls=true"
+      - "traefik.http.routers.wordpress.rule=Host(`wordpress.example.com`)"
+      - "traefik.http.routers.wordpress.tls.certresolver=lets-encrypt"
+    networks:
+      - database
+      - web
+    depends_on:
+      - mysql
+      
+volumes:
+  wordpress:
+  mysql:
