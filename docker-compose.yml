@@ -21,7 +21,7 @@ services:
     labels:
       - traefik.enable=false
   adminer:
-    image: adminer:4.6.3-standalone
+    image: adminer:4.8.0-standalone
     env_file:
       - .env
     labels:
