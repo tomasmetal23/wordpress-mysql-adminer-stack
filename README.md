@@ -1,5 +1,5 @@
-# Wordpress-mysql-adminer-stack with traefik as a proxy
-Docker Stack para un servicio de wordpress independiente.
+# Wordpress-nginx-mysql-adminer-stack with traefik as a proxy
+Docker Stack para un servicio de wordpress independiente, bitnami nginx wordpress como base.
 
 Deploy
 ------
