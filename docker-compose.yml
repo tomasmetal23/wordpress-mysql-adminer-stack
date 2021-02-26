@@ -1,7 +1,7 @@
-version: "3"
+version: "3.7"
 
 networks:
-  web:
+  $DEFAULT_NETWORK:
     external: true
   internal:
     external: false
@@ -10,51 +10,55 @@ services:
   mysql:
     image: mysql:5.7
     restart: always
+    env_file:
+      - .env
     volumes:
       - mysql:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: CONTRASEÑA
+      MYSQL_ROOT_PASSWORD: $DATABASE_PASSWORD
     networks:
       - internal
     labels:
       - traefik.enable=false
   adminer:
     image: adminer:4.6.3-standalone
+    env_file:
+      - .env
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.adminer.rule=Host(`adminer.example`)"
+      - "traefik.http.routers.adminer.rule=Host(`$ADMINER_SUBDOMAIN.$MY_DOMAIN`)"
       - "traefik.http.routers.adminer.tls=true"
       - "traefik.http.routers.adminer.tls.certresolver=lets-encrypt"
     networks:
       - internal
-      - web
+      - $DEFAULT_NETWORK
     depends_on:
       - mysql
       
   wordpress:
     image: deathmetall/wordpress-nginx:latest
-#    build: build
-    container_name: wordpress
+    env_file:
+      - .env
     ports:
-      - 8080
-      - 8443
+      - "8080"
     volumes:
       - wodpress:/bitnami/wordpress
       - ./wordpress-server-block.conf:/opt/bitnami/nginx/conf/server_blocks/wordpress-server-block.conf:ro
     environment:
-      WORDPRESS_DATABASE_PASSWORD: CONTRASEÑA
+      WORDPRESS_DATABASE_PASSWORD: $DATABASE_PASSWORD
       MARIADB_HOST: mysql
       WORDPRESS_DATABASE_USER: root
-      WORDPRESS_DATABASE_NAME: DATABASE
+      WORDPRESS_DATABASE_NAME: $DATABASE_NAME
       MARIADB_PORT_NUMBER: 3306
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.wordpress.tls=true"
-      - "traefik.http.routers.wordpress.rule=Host(`wordpress.example.com`)"
+      - "traefik.http.routers.wordpress.rule=Host(`$WORDPRESS_SUBDOMAIN.$MY_DOMAIN`)"
       - "traefik.http.routers.wordpress.tls.certresolver=lets-encrypt"
+      - "traefik.http.services.wordpress.loadbalancer.server.port=8080"
     networks:
       - internal
-      - web
+      - $DEFAULT_NETWORK
     depends_on:
       - mysql
       
