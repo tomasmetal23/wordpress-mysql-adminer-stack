@@ -44,7 +44,6 @@ services:
       - "8080"
     volumes:
       - wodpress:/bitnami/wordpress
-      - ./wordpress-server-block.conf:/opt/bitnami/nginx/conf/server_blocks/wordpress-server-block.conf:ro
     environment:
       WORDPRESS_DATABASE_PASSWORD: $DATABASE_PASSWORD
       MARIADB_HOST: mysql
