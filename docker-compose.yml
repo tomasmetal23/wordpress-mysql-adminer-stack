@@ -41,9 +41,11 @@ services:
     env_file:
       - .env
     ports:
-      - "8080"
+      - "8080" #HTTP
+      - "8443" #SSL
     volumes:
       - wodpress:/bitnami/wordpress
+      #- ./wordpress-server-block.conf:/opt/bitnami/nginx/conf/server_blocks/wordpress-server-block.conf # uncomment without traefik
     environment:
       WORDPRESS_DATABASE_PASSWORD: $DATABASE_PASSWORD
       MARIADB_HOST: mysql
