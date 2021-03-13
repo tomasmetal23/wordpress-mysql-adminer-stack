@@ -1,11 +1,13 @@
 # Wordpress-nginx-mysql-adminer-stack with traefik as a proxy
-Docker Stack para un servicio de wordpress independiente, bitnami nginx wordpress como base.
+Docker Stack for a standalone wordpress service, bitnami image as the basis. 
 
 Deploy
 ------
 First we copy the env-example file to .env, we assign our data to variables.
 
-$ docker-compose up -d
+``` $ git clone https://github.com/tomasmetal23/wordpress-mysql-adminer-stack.git ```
+
+``` $ docker-compose up -d ```
 
 DB & Adminer
 ------------
